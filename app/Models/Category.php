@@ -16,7 +16,13 @@ class Category extends Model
         return $this->belongsTo(User::class);
     }
 
+    //Use for relationships manger using filament Between Post and Category
     public function posts(){
         return $this->hasMany(Post::class);
+    }
+    //Many to many relationships With post and Category
+    public function categories_posts()
+    {
+        return $this->belongsToMany(Post::class, 'post_category')->withTimestamps();
     }
 }
