@@ -18,8 +18,7 @@ return new class extends Migration
             $table->json('tags')->nullable();
             $table->boolean('published')->default(false);
             $table->foreignId('category_id')->nullable()->constrained()->cascadeOnDel()->after('navmenu_id');
-
-            $table->index('category_id');
+            // $table->index('category_id');
         });
     }
 
