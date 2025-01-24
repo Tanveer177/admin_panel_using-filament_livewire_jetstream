@@ -27,16 +27,20 @@ class CategoryResource extends Resource
     {
         return $form
             ->schema([
-                TextInput::make('name')->required(),
-                TextInput::make('slug')->required(),
+                TextInput::make('name')
+                    ->required(),
+
+                TextInput::make('slug')
+                    ->required(),
+
                 Select::make('user_id')
                     ->label('User Type')
-                    ->options(User::query()->get()->pluck('name', 'id')->toArray())
+                    ->options(User::query()->pluck('name', 'id')->toArray())
                     ->required(),
-                // Here is we using where status is active then it's display base on status active get data from DB.
-                // agr yahan status ka column hota tu jo status active hota tu us base par hum active status k alternative hi data display ho sakta hai
-                // ->options(User::where('status', 'active')->get()->pluck('name', 'id')->toArray())
 
+                // If there was a status column, we could display data based on active status only.
+                // agr yahan status ka column hota tu jo status active hota tu us base par hum active status k alternative hi data display ho sakta hai
+                // ->options(User::where('status', 'active')->pluck('name', 'id')->toArray())
             ]);
     }
 
@@ -52,7 +56,7 @@ class CategoryResource extends Resource
                     ->label('Created At'),
             ])
             ->filters([
-                //
+                // Filters can be added here
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
@@ -74,9 +78,9 @@ class CategoryResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListCategories::route('/'),
+            'index'  => Pages\ListCategories::route('/'),
             'create' => Pages\CreateCategory::route('/create'),
-            'edit' => Pages\EditCategory::route('/{record}/edit'),
+            'edit'   => Pages\EditCategory::route('/{record}/edit'),
         ];
     }
 }
