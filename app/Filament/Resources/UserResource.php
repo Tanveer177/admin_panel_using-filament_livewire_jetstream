@@ -26,7 +26,7 @@ class UserResource extends Resource
         return $form
             ->schema([
                 TextInput::make('name')->required(),
-                TextInput::make('Email')->email(),
+                TextInput::make('email')->email(),
                 TextInput::make('Password'),
             ]);
     }
