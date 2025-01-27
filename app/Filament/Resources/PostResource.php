@@ -82,7 +82,8 @@ class PostResource extends Resource
                 TextColumn::make('created_at')->since(),
             ])
             ->filters([
-                Filter::make('Published Posts')->query(fn(Builder $query): Builder => $query->where('published', true)),
+                Filter::make('Published Post')->query(fn(Builder $query): Builder => $query->where('published', true)),
+                Filter::make('UnPublished Post')->query(fn(Builder $query): Builder => $query->where('published', false)),
                 SelectFilter::make('category_id')->options(Category::pluck('name', 'id')->all())->multiple(),
             ])
             ->actions([
