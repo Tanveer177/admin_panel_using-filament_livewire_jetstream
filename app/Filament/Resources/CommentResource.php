@@ -26,19 +26,18 @@ class CommentResource extends Resource
     public static function form(Form $form): Form
     {
         return $form
-        ->schema([
-            Select::make('user_id')->relationship('user', 'name')->searchable()->preload(),
-            TextInput::make('comment'),
-            MorphToSelect::make('commentable')
-            ->label('Comment Type')
-            // ->description('Here Is apply Morph Realantionships')
-            ->types([
-                MorphToSelect\Type::make(Post::class)->titleAttribute('title'),
-                MorphToSelect\Type::make(User::class)->titleAttribute('email'),
-                MorphToSelect\Type::make(Comment::class)->titleAttribute('id'),
-            ])->searchable()->preload()
-        ]);
-    
+            ->schema([
+                Select::make('user_id')->relationship('user', 'name')->searchable()->preload(),
+                TextInput::make('comment'),
+                MorphToSelect::make('commentable')
+                    ->label('Comment Type')
+                    // ->description('Here Is apply Morph Realantionships')
+                    ->types([
+                        MorphToSelect\Type::make(Post::class)->titleAttribute('title'),
+                        MorphToSelect\Type::make(User::class)->titleAttribute('email'),
+                        MorphToSelect\Type::make(Comment::class)->titleAttribute('id'),
+                    ])->searchable()->preload()
+            ]);
     }
 
     public static function table(Table $table): Table
