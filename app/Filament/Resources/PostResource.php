@@ -22,6 +22,8 @@ class PostResource extends Resource
 {
     protected static ?string $model = Post::class;
     protected static ?string $navigationIcon = 'heroicon-o-arrow-up-on-square-stack';
+    protected static ?string $navigationGroup = "Blog";
+
 
     public static function form(Form $form): Form
     {
@@ -50,7 +52,7 @@ class PostResource extends Resource
                         ->icon('heroicon-o-folder-plus')
                         ->schema([
                             FileUpload::make('image')->required(),
-                            FileUpload::make('thumbnail')->disk('public')->directory('thumbnail')->visibility('public'),
+                            FileUpload::make('thumbnail')->disk('public')->directory('thumbnails')->visibility('public'),
                         ]),
                 ]),
                 Group::make()->schema([
