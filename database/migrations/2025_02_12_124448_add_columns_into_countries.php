@@ -11,10 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('countries', function (Blueprint $table) {
-            $table->id();
-            $table->string('name')->nullable();
-            $table->timestamps();
+        Schema::table('countries', function (Blueprint $table) {
+            $table->char('code')->nullable();
+            $table->char('phone_code')->nullable();
         });
     }
 
@@ -23,6 +22,10 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('countries');
+        Schema::table('countries', function (Blueprint $table) {
+            $table->dropColumn('code');
+            $table->dropColumn('phone_code');
+            $table->dropColumn('name');
+        });
     }
 };
