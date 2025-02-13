@@ -17,7 +17,13 @@ class CountryResource extends Resource
 {
     protected static ?string $model = Country::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-flag'; // This for change the icon in the sidebar navigation 
+    protected static ?string $navigationLabel = 'Country'; // This for change the resource name in the sidebar navigation 
+    protected static ?string $modelLabel = 'Employee Country'; // This for change the model label in the resource page header   
+    protected static ?string $navigationGroup = 'System Management'; // This for assign the resource to a group in the sidebar
+    protected static ?string $slug = 'country'; // This for assign custom slug for the resource URL
+    protected static ?int $navigationSort = 1;
+
 
     public static function form(Form $form): Form
     {

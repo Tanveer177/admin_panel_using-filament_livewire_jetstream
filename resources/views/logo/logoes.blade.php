@@ -1,0 +1,1 @@
+<img src="{{ asset('/images/svg/laravel.svg') }}" alt="Logo" class="h-10">

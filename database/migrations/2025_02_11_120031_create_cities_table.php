@@ -13,12 +13,13 @@ return new class extends Migration
     {
         Schema::create('cities', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('state_id')->constrained('states')->default()->nullable();
+            $table->unsignedBigInteger('state_id');
+            // $table->foreign('state_id')->references('id')->on('states')->onDelete('cascade');
             $table->string('name');
             $table->timestamps();
         });
     }
-
+    
     /**
      * Reverse the migrations.
      */
