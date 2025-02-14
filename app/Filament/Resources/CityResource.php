@@ -18,9 +18,9 @@ class CityResource extends Resource
     protected static ?string $model = City::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-home-modern';
-    protected static ?string $navigationLabel = 'City'; 
-    protected static ?string $modelLabel = 'Employee City'; 
-    protected static ?string $navigationGroup = 'System Management';  
+    protected static ?string $navigationLabel = 'City';
+    protected static ?string $modelLabel = 'Employee City';
+    protected static ?string $navigationGroup = 'System Management';
     protected static ?int $navigationSort = 3;
 
 
@@ -29,9 +29,11 @@ class CityResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('state_id')
-                    ->required()
-                    ->numeric(),
+                Forms\Components\Select::make('state_id')
+                    ->relationship('state', titleAttribute: 'name')
+                    ->searchable()
+                    ->preload()
+                    ->required(),
                 Forms\Components\TextInput::make('name')
                     ->required()
                     ->maxLength(255),
