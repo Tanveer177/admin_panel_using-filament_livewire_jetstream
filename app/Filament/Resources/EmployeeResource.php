@@ -4,41 +4,74 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\EmployeeResource\Pages;
 use App\Filament\Resources\EmployeeResource\RelationManagers;
+use App\Models\City;
+use App\Models\Country;
+use App\Models\Department;
+use App\Models\State;
 use App\Models\Employee;
 use Filament\Forms;
+use Filament\Forms\Components\Tabs\Tab;
 use Filament\Forms\Form;
+use Filament\Forms\Get;
+use Filament\Forms\Set;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Collection;
+use Filament\Infolists\Infolist;
+use Filament\Infolists\Components\TextEntry;
+use Filament\Infolists\Components\Section;
+use Filament\Tables\Filters\SelectFilter;
 
 class EmployeeResource extends Resource
 {
     protected static ?string $model = Employee::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-user-group';
-    protected static ?string $navigationLabel = 'Employee'; 
-    protected static ?string $modelLabel = 'Employee'; 
-    protected static ?string $navigationGroup = 'System Management';  
+    protected static ?string $navigationLabel = 'Employee';
+    protected static ?string $modelLabel = 'Employee';
+    protected static ?string $navigationGroup = 'System Management';
     protected static ?int $navigationSort = 5;
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('country_id')
-                    ->required()
-                    ->numeric(),
-                Forms\Components\TextInput::make('state_id')
-                    ->required()
-                    ->numeric(),
-                Forms\Components\TextInput::make('city_id')
-                    ->required()
-                    ->numeric(),
-                Forms\Components\TextInput::make('department_id')
-                    ->required()
-                    ->numeric(),
+                Forms\Components\Select::make('country_id')
+                    ->relationship(name: 'country',  titleAttribute: 'name')
+                    // ->options(Country::pluck('name', 'id')->all())
+                    ->live()
+                    ->searchable()->preload()
+                    ->afterStateUpdated(function (Set $set) {
+                        $set('state_id', null);
+                        $set('city_id', null);
+                    }) // This will reset the state and city fields when the country field is changed
+                    ->required(),
+                Forms\Components\Select::make('state_id')
+                    // ->relationship(name: 'state', titleAttribute: 'name') // ->options(State::pluck('name', 'id')->all())   // This will be used when we have a small number of records in the table
+                    ->searchable()->preload()
+                    ->options(
+                        fn(Get $get): Collection => State::query()
+                            ->where('country_id', $get('country_id'))->pluck('name', 'id')
+                    )
+                    ->live()
+                    ->required(),
+                Forms\Components\Select::make('city_id')
+                    // ->relationship(name: 'city', titleAttribute: 'name') // ->options(City::pluck('name', 'id')->all())
+                    ->searchable()->preload()
+                    ->options(
+                        fn(Get $get): Collection => City::query()
+                            ->where('state_id', $get('state_id'))->pluck('name', 'id')
+                    )
+                    ->live()
+                    ->required(),
+                Forms\Components\Select::make('department_id')
+                    ->relationship(name: 'department', titleAttribute: 'name')
+                    // ->options(Department::pluck('name', 'id')->all())
+                    ->searchable()->preload()
+                    ->required(),
                 Forms\Components\TextInput::make('first_name')
                     ->required()
                     ->maxLength(255),
@@ -53,7 +86,7 @@ class EmployeeResource extends Resource
                     ->maxLength(255),
                 Forms\Components\TextInput::make('zip_code')
                     ->required()
-                    ->maxLength(255),
+                    ->maxLength(10),
                 Forms\Components\DatePicker::make('date_of_birth')
                     ->required(),
                 Forms\Components\DatePicker::make('date_hired')
@@ -65,33 +98,42 @@ class EmployeeResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('country_id')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('state_id')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('city_id')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('department_id')
-                    ->numeric()
+                Tables\Columns\TextColumn::make('country.name')
+                    ->label('Country')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('first_name')
-                    ->searchable(),
+                    ->searchable()
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('last_name')
-                    ->searchable(),
+                    ->searchable()
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('middle_name')
-                    ->searchable(),
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('address')
-                    ->searchable(),
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->searchable()
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('zip_code')
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('date_of_birth')
                     ->date()
+                    ->toggleable(isToggledHiddenByDefault: true)
                     ->sortable(),
                 Tables\Columns\TextColumn::make('date_hired')
                     ->date()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('state.name')->label('State')
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('city.name')->label('City')
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('department.name')->label('Department')
+                    ->toggleable(isToggledHiddenByDefault: true)
                     ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
@@ -103,16 +145,34 @@ class EmployeeResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+            SelectFilter::make('Department')
+            ->relationship('department', 'name')
+            ->searchable()
+            ->preload(),
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
+                Tables\Actions\DeleteAction::make()
+                    ->requiresConfirmation(), // This will show a confirmation dialog before deleting the record 
                 Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
+            ]);
+    }
+
+    public static function infolist(Infolist $infolist): Infolist
+    {
+        return $infolist
+            ->schema([
+                Section::make('Employees Information')->schema([
+                    TextEntry::make('country.name')->label('Country Name'),
+                    TextEntry::make('state.name')->label('State Name'),
+                    TextEntry::make('city.name')->label('City Name'),
+                    TextEntry::make('department.name')->label('Department Name'),
+                ])->columns(2)
             ]);
     }
 
@@ -128,7 +188,7 @@ class EmployeeResource extends Resource
         return [
             'index' => Pages\ListEmployees::route('/'),
             'create' => Pages\CreateEmployee::route('/create'),
-            'view' => Pages\ViewEmployee::route('/{record}'),
+            // 'view' => Pages\ViewEmployee::route('/{record}'),
             'edit' => Pages\EditEmployee::route('/{record}/edit'),
         ];
     }

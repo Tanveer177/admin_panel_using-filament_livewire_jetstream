@@ -12,15 +12,19 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Filament\Infolists\Infolist;
+use Filament\Infolists\Components\TextEntry;
+use Filament\Infolists\Components\Section;
+use Illuminate\Database\Eloquent\Model;
 
 class DepartmentResource extends Resource
 {
     protected static ?string $model = Department::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-group';
-    protected static ?string $navigationLabel = 'Department'; 
-    protected static ?string $modelLabel = 'Employee Department'; 
-    protected static ?string $navigationGroup = 'System Management';  
+    protected static ?string $navigationLabel = 'Department';
+    protected static ?string $modelLabel = 'Employee Department';
+    protected static ?string $navigationGroup = 'System Management';
     protected static ?int $navigationSort = 4;
 
 
@@ -40,6 +44,9 @@ class DepartmentResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('name')
                     ->searchable(),
+                Tables\Columns\TextColumn::make('employee_count')
+                    ->getStateUsing(fn($record) => $record->employees()->count())
+                    ->label('Employee Count'),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -62,6 +69,19 @@ class DepartmentResource extends Resource
                 ]),
             ]);
     }
+    public static function infolist(Infolist $infolist): Infolist
+    {
+        return $infolist
+            ->schema([
+                Section::make('Deparment Information')->schema([
+                    TextEntry::make('name')->label('Name'),
+                    TextEntry::make('employee_count')
+                    ->state(function (Model $record): int {
+                        return $record->employees()->count();
+                    })->label('Employee Count'),
+                ])->columns(2)
+            ]);
+    }
 
     public static function getRelations(): array
     {
@@ -75,7 +95,7 @@ class DepartmentResource extends Resource
         return [
             'index' => Pages\ListDepartments::route('/'),
             'create' => Pages\CreateDepartment::route('/create'),
-            'view' => Pages\ViewDepartment::route('/{record}'),
+            // 'view' => Pages\ViewDepartment::route('/{record}'),
             'edit' => Pages\EditDepartment::route('/{record}/edit'),
         ];
     }

@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class State extends Model
 {
@@ -13,5 +14,9 @@ class State extends Model
     public function country(): BelongsTo // This function is used to define the relationship between the State and Country models using the BelongsTo method.
     {
         return $this->belongsTo(Country::class);
+    }
+    public function employees(): HasMany
+    {
+        return $this->hasMany(Employee::class);
     }
 }

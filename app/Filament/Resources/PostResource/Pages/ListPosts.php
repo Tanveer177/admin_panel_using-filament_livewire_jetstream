@@ -21,17 +21,17 @@ class ListPosts extends ListRecords
     }
 
     public function getTabs(): array
-{
-    return [
-        'All' => Tab::make(),
-        'Published' => Tab::make()
-            ->modifyQueryUsing(function (Builder $query){
-                $query->where('published', true );
-            }),
-      'Un Published' => Tab::make()
-            ->modifyQueryUsing(function (Builder $query){
-                $query->where('published', false );
-            }),
-    ];
-}
+    {
+        return [
+            'All' => Tab::make(),
+            'Published' => Tab::make()
+                ->modifyQueryUsing(function (Builder $query) {
+                    $query->where('published', true);
+                }),
+            'Un Published' => Tab::make()
+                ->modifyQueryUsing(function (Builder $query) {
+                    $query->where('published', false);
+                }),
+        ];
+    }
 }
