@@ -22,12 +22,10 @@ class EmployeeFactory extends Factory
     {
         return [
             'first_name' => $this->faker->firstName,
-            'middle_name' => $this->faker->optional()->firstName,
+            'middle_name' => $this->faker->word, // Ensure it always has a value
             'last_name' => $this->faker->lastName,
-            // 'email' => $this->faker->unique()->safeEmail,
             'zip_code' => $this->faker->postcode,
             'address' => $this->faker->address,
-            // 'country_id' => rand(1, 100), // For random generation of country_id foreign key column value
             'country_id' => Country::inRandomOrder()->first()?->id ?? Country::factory()->create()->id,
             'state_id' => State::inRandomOrder()->first()?->id ?? State::factory()->create()->id,
             'city_id' => City::inRandomOrder()->first()?->id ?? City::factory()->create()->id,
@@ -36,4 +34,5 @@ class EmployeeFactory extends Factory
             'date_of_birth' => $this->faker->date(),
         ];
     }
+    
 }
