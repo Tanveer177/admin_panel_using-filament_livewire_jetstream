@@ -20,13 +20,15 @@ use Illuminate\Database\Eloquent\Model;
 class DepartmentResource extends Resource
 {
     protected static ?string $model = Department::class;
-
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-group';
     protected static ?string $navigationLabel = 'Department';
     protected static ?string $modelLabel = 'Employee Department';
     protected static ?string $navigationGroup = 'System Management';
     protected static ?int $navigationSort = 4;
-
+    public static function getNavigationBadge(): ?string
+    {
+        return static::getModel()::count();
+    }
 
     public static function form(Form $form): Form
     {
@@ -76,9 +78,9 @@ class DepartmentResource extends Resource
                 Section::make('Deparment Information')->schema([
                     TextEntry::make('name')->label('Name'),
                     TextEntry::make('employee_count')
-                    ->state(function (Model $record): int {
-                        return $record->employees()->count();
-                    })->label('Employee Count'),
+                        ->state(function (Model $record): int {
+                            return $record->employees()->count();
+                        })->label('Employee Count'),
                 ])->columns(2)
             ]);
     }

@@ -28,7 +28,10 @@ class CountryResource extends Resource
     protected static ?string $navigationGroup = 'System Management'; // This for assign the resource to a group in the sidebar
     protected static ?string $slug = 'country'; // This for assign custom slug for the resource URL
     protected static ?int $navigationSort = 1;
-
+    public static function getNavigationBadge(): ?string
+    {
+        return static::getModel()::count();
+    }
 
     public static function form(Form $form): Form
     {
@@ -61,7 +64,7 @@ class CountryResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
-                    ->sortable()    
+                    ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('updated_at')
                     ->dateTime()
@@ -83,7 +86,7 @@ class CountryResource extends Resource
             ]);
     }
 
-        
+
     public static function infolist(Infolist $infolist): Infolist
     {
         return $infolist

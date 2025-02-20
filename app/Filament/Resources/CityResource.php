@@ -26,7 +26,10 @@ class CityResource extends Resource
     protected static ?string $modelLabel = 'Employee City';
     protected static ?string $navigationGroup = 'System Management';
     protected static ?int $navigationSort = 3;
-
+    public static function getNavigationBadge(): ?string
+    {
+        return static::getModel()::count();
+    }
 
 
     public static function form(Form $form): Form
@@ -79,7 +82,7 @@ class CityResource extends Resource
             ]);
     }
 
-    
+
     public static function infolist(Infolist $infolist): Infolist
     {
         return $infolist
