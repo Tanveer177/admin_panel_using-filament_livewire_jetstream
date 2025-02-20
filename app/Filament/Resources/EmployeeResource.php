@@ -24,17 +24,50 @@ use Filament\Infolists\Infolist;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Components\Section;
 use Filament\Tables\Filters\SelectFilter;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Contracts\Support\Htmlable;
 
 class EmployeeResource extends Resource
 {
     protected static ?string $model = Employee::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-user-group';
-    protected static ?string $navigationLabel = 'Employee';
-    protected static ?string $modelLabel = 'Employee';
+    protected static ?string $navigationIcon = 'heroicon-o-user-group'; // The icon used in the navigation
+    protected static ?string $navigationLabel = 'Employee'; // The label used in the navigation
+    protected static ?string $modelLabel = 'Employee'; // The label used in the resource index
+    //Group name under which the resource will be displayed
     protected static ?string $navigationGroup = 'System Management';
+    //position of the resource
     protected static ?int $navigationSort = 5;
-
+    //Global Search base on this attribute
+    //1 Methods
+    protected static ?string $recordTitleAttribute = 'first_name';
+    //2 Methods
+    public static function getGlobalSearchResultTitle(Model $record): string
+    {
+        return $record->last_name;
+    }
+    // 3 Mehtods
+    public static function getGloballySearchableAttributes(): array
+    {
+        return ['first_name', 'last_name', 'middle_name', 'country.name'];
+    }
+    //4 methods
+    public static function getGlobalSearchResultDetails(Model $record): array
+    {
+        return [
+            'Country' => $record->country->name
+        ];
+    }
+    //5 Methods 
+    public static function getGlobalSearchEloquentQuery(): Builder
+    {
+        return parent::getGlobalSearchEloquentQuery()->with(['country']);
+    }
+    // Resources Count With badged
+    public static function getNavigationBadge(): ?string
+    {
+        return static::getModel()::count();
+    }
     public static function form(Form $form): Form
     {
         return $form
@@ -145,10 +178,10 @@ class EmployeeResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-            SelectFilter::make('Department')
-            ->relationship('department', 'name')
-            ->searchable()
-            ->preload(),
+                SelectFilter::make('Department')
+                    ->relationship('department', 'name')
+                    ->searchable()
+                    ->preload(),
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
