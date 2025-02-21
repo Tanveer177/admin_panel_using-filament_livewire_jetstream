@@ -16,12 +16,13 @@ class DashboardChartWidget extends ChartWidget
 {
     use InteractsWithPageFilters;
     protected static ?string $heading = 'Overview';
+    protected static ?int $sort = 2;
 
     protected function getData(): array
     {
 
-       $start =$this->filters['startDate'];
-       $end  =$this->filters['endDate'];
+        $start = $this->filters['startDate'];
+        $end  = $this->filters['endDate'];
         $data = Trend::model(User::class)
             ->between(
                 start: $start ? Carbon::parse($start) : now()->subMonths(6),

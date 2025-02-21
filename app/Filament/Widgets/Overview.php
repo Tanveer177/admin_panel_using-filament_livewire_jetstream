@@ -14,11 +14,12 @@ use Filament\Widgets\Concerns\InteractsWithPageFilters;
 class Overview extends BaseWidget
 {
     use InteractsWithPageFilters;
+    // protected static ?string
     protected function getStats(): array
     {
         $start = $this->filters['startDate'];
         $end  = $this->filters['endDate'];
-    
+
         return [
             Stat::make(
                 'Users',
@@ -27,10 +28,10 @@ class Overview extends BaseWidget
                     ->count()
             )
                 ->description(' New Users that have Joined')
-                ->descriptionIcon('heroicon-o-users', IconPosition::Before)
+                ->descriptionIcon('heroicon-m-arrow-trending-up', IconPosition::Before)
                 ->chart([1, 2, 30, 40, 55])
                 ->color('success'),
-    
+
             Stat::make(
                 'Categories',
                 Category::when($start, fn($query) => $query->whereDate('created_at', '>=', $start))
@@ -41,7 +42,7 @@ class Overview extends BaseWidget
                 ->descriptionIcon('heroicon-o-numbered-list', IconPosition::Before)
                 ->chart([1, 2, 30, 40, 55])
                 ->color('danger'),
-    
+
             Stat::make(
                 'Posts',
                 Post::when($start, fn($query) => $query->whereDate('created_at', '>=', $start))
@@ -52,7 +53,7 @@ class Overview extends BaseWidget
                 ->descriptionIcon('heroicon-o-arrow-up-on-square-stack', IconPosition::Before)
                 ->chart([1, 2, 30, 40, 55])
                 ->color('warning'),
-    
+
             Stat::make(
                 'Comments',
                 Comment::when($start, fn($query) => $query->whereDate('created_at', '>=', $start))
